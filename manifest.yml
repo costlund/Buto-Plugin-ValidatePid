@@ -7,7 +7,7 @@ history:
 plugin:
   -
     name: sit/validator
-    version: 1.0.0
+    version: null
 sys:
   -
     name: mercury
