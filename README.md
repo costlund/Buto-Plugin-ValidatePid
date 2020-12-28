@@ -9,8 +9,8 @@ Correct format is YYYYMMDD-1234 where last number is a check value 0-9.
 
 ## PHP
 ```
-wfPlugin::includeonce('sit/validator');
-$obj = new PluginSitValidator();
+wfPlugin::includeonce('validate/pid');
+$obj = new PluginValidatePid();
 $form = new PluginWfArray();
 $form->set('items/pid/label', 'pid');
 $form->set('items/pid/post_value', '19950622-8577');

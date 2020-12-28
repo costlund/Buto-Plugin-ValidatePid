@@ -1,13 +1,13 @@
-version: 1.0.0
+version: 1.0.1
 history:
+  1.0.1:
+    date: '2020-12-28'
+    title: 'Typo'
+    description: 'Typo fix.'
   1.0.0:
     date: '2020-10-08'
     title: 'First version.'
     description: 'Manifest created.'
-plugin:
-  -
-    name: sit/validator
-    version: null
 sys:
   -
     name: mercury
