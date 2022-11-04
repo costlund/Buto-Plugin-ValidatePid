@@ -1,23 +1,58 @@
 <?php
 class PluginValidatePid{
   public function validate_pid($field, $form, $data = array()){
+    $data = new PluginWfArray($data);
+    /**
+     * 
+     */
+
+    $len = 13;
+    if($data->get('skip_delimitator')){
+      $len = 12;
+    }
+    /**
+     * 
+     */
     if(wfArray::get($form, "items/$field/is_valid") && strlen(wfArray::get($form, "items/$field/post_value"))){
-      if(!$this->isPid(wfArray::get($form, "items/$field/post_value"))){
+      if(!$this->isPid(wfArray::get($form, "items/$field/post_value"), $len)){
         $form = wfArray::set($form, "items/$field/is_valid", false);
         $form = wfArray::set($form, "items/$field/errors/", __('?label is not a PID!', array('?label' => wfArray::get($form, "items/$field/label"))));
       }
     }
+    /**
+     * 
+     */
     return $form;
   }
   /**
-   * Check if string has length of 13 and is swe pid.
+   * Check if string has length of 13 (or 12) and is swe pid.
    * @param string $pid
    * @return boolean
    */
-  private function isPid($pid){
-    if(strlen($pid)!=13){
+  private function isPid($pid, $len){
+    /**
+     * 
+     */
+    if($len == 13){
+      $match = preg_match("/\d{8}\-\d{4}/", $pid);
+    }elseif($len == 12){
+      $match = preg_match("/\d{12}/", $pid);
+    }
+    /**
+     * 
+     */
+    if(strlen($pid)!=$len){
       return false;
-    }elseif(preg_match("/\d{8}\-\d{4}/", $pid)){
+    }elseif($match){
+      /**
+       * 
+       */
+      if(strlen($pid) == 12){
+        $pid = substr($pid, 0, 8).'-'.substr($pid, 8);
+      }
+      /**
+       * 
+       */
       //https://sv.wikipedia.org/wiki/Personnummer_i_Sverige
       $control = new PluginWfArray();
       $control->set('pid', substr(str_replace('-', '', $pid), 2));
