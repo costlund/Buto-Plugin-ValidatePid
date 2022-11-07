@@ -1,14 +1,25 @@
 <?php
 class PluginValidatePid{
   public function validate_pid($field, $form, $data = array()){
+    /**
+     * 
+     */
+    wfPlugin::includeonce('i18n/translate_v1');
+    $i18n = new PluginI18nTranslate_v1();
+    $i18n->path = '/plugin/validate/pid/i18n';
+    /**
+     * 
+     */
     $data = new PluginWfArray($data);
     /**
      * 
      */
 
     $len = 13;
+    $format = 'YYYYMMDD-NNNN';
     if($data->get('skip_delimitator')){
       $len = 12;
+      $format = 'YYYYMMDDNNNN';
     }
     /**
      * 
@@ -16,7 +27,7 @@ class PluginValidatePid{
     if(wfArray::get($form, "items/$field/is_valid") && strlen(wfArray::get($form, "items/$field/post_value"))){
       if(!$this->isPid(wfArray::get($form, "items/$field/post_value"), $len)){
         $form = wfArray::set($form, "items/$field/is_valid", false);
-        $form = wfArray::set($form, "items/$field/errors/", __('?label is not a PID!', array('?label' => wfArray::get($form, "items/$field/label"))));
+        $form = wfArray::set($form, "items/$field/errors/", $i18n->translateFromTheme("?label must be formatted as ?format!", array('?label' => wfArray::get($form, "items/$field/label"), '?format' => $format)));
       }
     }
     /**
