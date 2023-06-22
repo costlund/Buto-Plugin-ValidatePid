@@ -8,8 +8,9 @@ Correct format is YYYYMMDD-NNNN (or YYYYMMDDNNNN) where last number is a check v
 
 ## Organisation number
 One could also validate as organisation number.
+Also suitable as personal number in some cases.
 ```
-9506228577
+950622-8577
 ```
 
 ## PHP
@@ -39,10 +40,12 @@ items:
         data:
 ```
 Set data/delimitator to true. Pid must be in format 199506228577.
+Only suitable if parameter organisation is NOT true.
 ```
           skip_delimitator: true
 ```
-Set param organisation to validate as NNNNNNNNNN (ten digits).
+Set param organisation to validate as NNNNNN-NNNN (eleven digits).
+Also used as personal pid in some cases.
 ```
           organisation: true
 ```

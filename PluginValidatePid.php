@@ -18,8 +18,8 @@ class PluginValidatePid{
     $len = 13;
     $format = 'YYYYMMDD-NNNN';
     if($data->get('organisation')){
-      $len = 10;
-      $format = 'NNNNNNNNNN';
+      $len = 11;
+      $format = 'NNNNNN-NNNN';
     }elseif($data->get('skip_delimitator')){
       $len = 12;
       $format = 'YYYYMMDDNNNN';
@@ -51,8 +51,8 @@ class PluginValidatePid{
       $match = preg_match("/\d{8}\-\d{4}/", $pid);
     }elseif($len == 12){
       $match = preg_match("/\d{12}/", $pid);
-    }elseif($len == 10){
-      $match = preg_match("/\d{10}/", $pid);
+    }elseif($len == 11){
+      $match = preg_match("/\d{6}\-\d{4}/", $pid);
     }
     /**
      * 
@@ -71,7 +71,7 @@ class PluginValidatePid{
        */
       //https://sv.wikipedia.org/wiki/Personnummer_i_Sverige
       $control = new PluginWfArray();
-      if($len != 10){
+      if($len == 12 || $len == 13){
         $control->set('pid', substr(str_replace('-', '', $pid), 2));
       }else{
         $control->set('pid', str_replace('-', '', $pid));
