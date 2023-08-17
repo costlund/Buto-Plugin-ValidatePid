@@ -27,7 +27,7 @@ class PluginValidatePid{
     /**
      * 
      */
-    if(wfArray::get($form, "items/$field/is_valid") && strlen(wfArray::get($form, "items/$field/post_value"))){
+    if(wfArray::get($form, "items/$field/is_valid") && wfPhpfunc::strlen(wfArray::get($form, "items/$field/post_value"))){
       if(!$this->isPid(wfArray::get($form, "items/$field/post_value"), $len)){
         $form = wfArray::set($form, "items/$field/is_valid", false);
         $form = wfArray::set($form, "items/$field/errors/", $i18n->translateFromTheme("?label must be formatted as ?format!", array('?label' => wfArray::get($form, "items/$field/label"), '?format' => $format)));
@@ -57,14 +57,14 @@ class PluginValidatePid{
     /**
      * 
      */
-    if(strlen($pid)!=$len){
+    if(wfPhpfunc::strlen($pid)!=$len){
       return false;
     }elseif($match){
       /**
        * 
        */
-      if(strlen($pid) == 12){
-        $pid = substr($pid, 0, 8).'-'.substr($pid, 8);
+      if(wfPhpfunc::strlen($pid) == 12){
+        $pid = wfPhpfunc::substr($pid, 0, 8).'-'.substr($pid, 8);
       }
       /**
        * 
@@ -72,24 +72,24 @@ class PluginValidatePid{
       //https://sv.wikipedia.org/wiki/Personnummer_i_Sverige
       $control = new PluginWfArray();
       if($len == 12 || $len == 13){
-        $control->set('pid', substr(str_replace('-', '', $pid), 2));
+        $control->set('pid', wfPhpfunc::substr(wfPhpfunc::str_replace('-', '', $pid), 2));
       }else{
-        $control->set('pid', str_replace('-', '', $pid));
+        $control->set('pid', wfPhpfunc::str_replace('-', '', $pid));
       }
       $control->set('pid_original', $pid);
       $prod = 0;
       for($i=0;$i<strlen($control->get('pid'))-1;$i++){
-        $control->set("pos/$i/value", (substr($control->get('pid'), $i, 1)));
+        $control->set("pos/$i/value", (wfPhpfunc::substr($control->get('pid'), $i, 1)));
         $mult = 1;
         if(($i % 2)==0){
           $mult = 2;
         }
         $control->set("pos/$i/mult", $mult);
         $control->set("pos/$i/value_mult", $control->get("pos/$i/value")*$mult);
-        if(strlen($control->get("pos/$i/value_mult"))==1){
+        if(wfPhpfunc::strlen($control->get("pos/$i/value_mult"))==1){
           $control->set("pos/$i/prod", $control->get("pos/$i/value_mult"));
         }else{
-          $control->set("pos/$i/prod", substr($control->get("pos/$i/value_mult"), 0, 1)+substr($control->get("pos/$i/value_mult"), 1, 1));
+          $control->set("pos/$i/prod", wfPhpfunc::substr($control->get("pos/$i/value_mult"), 0, 1)+substr($control->get("pos/$i/value_mult"), 1, 1));
         }
         $prod += $control->get("pos/$i/prod");
       }
@@ -98,7 +98,7 @@ class PluginValidatePid{
       if($control->get('modulus')==10){
         $control->set('modulus', 0);
       }
-      $control->set('check', substr($control->get('pid'), 9, 1));
+      $control->set('check', wfPhpfunc::substr($control->get('pid'), 9, 1));
       $control->set('ok', false);
       if($control->get('modulus')==$control->get('check')){
         $control->set('ok', true);
