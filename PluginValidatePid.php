@@ -28,9 +28,10 @@ class PluginValidatePid{
      * 
      */
     if(wfArray::get($form, "items/$field/is_valid") && wfPhpfunc::strlen(wfArray::get($form, "items/$field/post_value"))){
-      if(!$this->isPid(wfArray::get($form, "items/$field/post_value"), $len)){
+      $is_pid = $this->isPid(wfArray::get($form, "items/$field/post_value"), $len);
+      if(!$is_pid->get('ok')){
         $form = wfArray::set($form, "items/$field/is_valid", false);
-        $form = wfArray::set($form, "items/$field/errors/", $i18n->translateFromTheme("?label must be formatted as ?format!", array('?label' => wfArray::get($form, "items/$field/label"), '?format' => $format)));
+        $form = wfArray::set($form, "items/$field/errors/", $i18n->translateFromTheme($is_pid->get('message'), array('?label' => wfArray::get($form, "items/$field/label"), '?format' => $format)));
       }
     }
     /**
@@ -41,7 +42,7 @@ class PluginValidatePid{
   /**
    * Check if string has length of 13 (or 12) and is swe pid.
    * @param string $pid
-   * @return boolean
+   * @return PluginWfArray
    */
   private function isPid($pid, $len){
     /**
@@ -57,8 +58,11 @@ class PluginValidatePid{
     /**
      * 
      */
+    $control = new PluginWfArray();
     if(wfPhpfunc::strlen($pid)!=$len){
-      return false;
+      $control->set('ok', false);
+      $control->set('message', '?label has a length failure!');
+      return $control;
     }elseif($match){
       /**
        * 
@@ -70,7 +74,6 @@ class PluginValidatePid{
        * 
        */
       //https://sv.wikipedia.org/wiki/Personnummer_i_Sverige
-      $control = new PluginWfArray();
       if($len == 12 || $len == 13){
         $control->set('pid', wfPhpfunc::substr(wfPhpfunc::str_replace('-', '', $pid), 2));
       }else{
@@ -100,12 +103,16 @@ class PluginValidatePid{
       }
       $control->set('check', wfPhpfunc::substr($control->get('pid'), 9, 1));
       $control->set('ok', false);
+      $control->set('message', '?label has an incorrect control digit!');
       if($control->get('modulus')==$control->get('check')){
         $control->set('ok', true);
+        $control->set('message', '?label has a correct control digit!');
       }
-      return $control->get('ok');
+      return $control;
     }else{
-      return false;
+      $control->set('ok', false);
+      $control->set('message', '?label must be formatted as ?format!');
+      return $control;
     }
   }
 }

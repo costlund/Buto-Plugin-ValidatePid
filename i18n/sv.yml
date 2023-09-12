@@ -1,1 +1,4 @@
 ?label must be formatted as ?format!: ?label måste formateras som ?format!
+?label has a length failure!: ?label har ett längdfel!
+?label has an incorrect control digit!: ?label har en felaktig kontrollsiffra!
+?label has a correct control digit!: ?label har en korrekt kontrollsiffra!
