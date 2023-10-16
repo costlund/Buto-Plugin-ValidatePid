@@ -1,5 +1,9 @@
-version: 1.6.0
+version: 1.7.0
 history:
+  1.7.0:
+    date: '2023-10-16'
+    title: 'New params'
+    description: 'Add cordination number, born, sex.'
   1.6.0:
     date: '2023-09-12'
     title: 'Validation messages'

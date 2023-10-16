@@ -44,7 +44,17 @@ class PluginValidatePid{
    * @param string $pid
    * @return PluginWfArray
    */
-  private function isPid($pid, $len){
+  public function isPid($pid, $len = null){
+    /**
+     * len
+     */
+    if(is_null($len)){
+      $len = strlen($pid);
+    }
+    /**
+     * 
+     */
+    $control = new PluginWfArray();
     /**
      * 
      */
@@ -54,11 +64,16 @@ class PluginValidatePid{
       $match = preg_match("/\d{12}/", $pid);
     }elseif($len == 11){
       $match = preg_match("/\d{6}\-\d{4}/", $pid);
+    }elseif($len == 10){
+      $match = preg_match("/\d{10}/", $pid);
+    }else{
+      $control->set('ok', false);
+      $control->set('message', '?label has a length failure!');
+      return $control;
     }
     /**
      * 
      */
-    $control = new PluginWfArray();
     if(wfPhpfunc::strlen($pid)!=$len){
       $control->set('ok', false);
       $control->set('message', '?label has a length failure!');
@@ -71,16 +86,30 @@ class PluginValidatePid{
         $pid = wfPhpfunc::substr($pid, 0, 8).'-'.substr($pid, 8);
       }
       /**
+       * pid has now format 010203XXXX (ten digits)
+       */
+      $control->set('pid_original', $pid);
+      /**
        * 
        */
-      //https://sv.wikipedia.org/wiki/Personnummer_i_Sverige
+      $control->set('coordination_number', null);
+      $control->set('born', null);
+      $control->set('sex', null);
+      /**
+       * 
+       */
       if($len == 12 || $len == 13){
         $control->set('pid', wfPhpfunc::substr(wfPhpfunc::str_replace('-', '', $pid), 2));
       }else{
         $control->set('pid', wfPhpfunc::str_replace('-', '', $pid));
       }
-      $control->set('pid_original', $pid);
+      /**
+       * 
+       */
       $prod = 0;
+      $coordination_number = false;
+      $born = null;
+      $sex = null;
       for($i=0;$i<strlen($control->get('pid'))-1;$i++){
         $control->set("pos/$i/value", (wfPhpfunc::substr($control->get('pid'), $i, 1)));
         $mult = 1;
@@ -95,8 +124,59 @@ class PluginValidatePid{
           $control->set("pos/$i/prod", wfPhpfunc::substr($control->get("pos/$i/value_mult"), 0, 1)+substr($control->get("pos/$i/value_mult"), 1, 1));
         }
         $prod += $control->get("pos/$i/prod");
+        /**
+         * coordination_number
+         */
+        if($i==4){
+          if(wfPhpfunc::substr($control->get('pid'), $i, 1)>3){
+            $coordination_number = true;
+          }
+        }
+        /**
+         * born
+         */
+        if($i<=5){
+          if($i!=4){
+            $born .= wfPhpfunc::substr($control->get('pid'), $i, 1);
+          }else{
+            if(!$coordination_number){
+              $born .= wfPhpfunc::substr($control->get('pid'), $i, 1);
+            }else{
+              $born .= wfPhpfunc::substr($control->get('pid'), $i, 1)-6;
+            }
+          }
+        }
+        if($i == 1 || $i==3){
+          $born .= '-';
+        }
+        /**
+         * sex
+         */
+        if($i==8){
+          $sex = wfPhpfunc::substr($control->get('pid'), $i, 1);
+
+          if(wfPhpfunc::substr($control->get('pid'), $i, 1) % 2 == 0){ 
+            $sex = 'Female';
+          }else{
+            $sex = 'Male';
+          }
+        }
       }
+      /**
+       * born
+       */
+      if($len < 12){
+        $born = null;
+      }else{
+        $born = wfPhpfunc::substr($control->get('pid_original'), 0, 2) .$born;
+      }
+      /**
+       * 
+       */
       $control->set('prod', $prod);
+      $control->set('coordination_number', $coordination_number);
+      $control->set('born', $born);
+      $control->set('sex', $sex);
       $control->set('modulus', 10 - ($control->get('prod') % 10));
       if($control->get('modulus')==10){
         $control->set('modulus', 0);
