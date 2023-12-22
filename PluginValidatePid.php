@@ -49,7 +49,7 @@ class PluginValidatePid{
      * len
      */
     if(is_null($len)){
-      $len = strlen($pid);
+      $len = wfPhpfunc::strlen($pid);
     }
     /**
      * 
@@ -110,7 +110,7 @@ class PluginValidatePid{
       $coordination_number = false;
       $born = null;
       $sex = null;
-      for($i=0;$i<strlen($control->get('pid'))-1;$i++){
+      for($i=0;$i<wfPhpfunc::strlen($control->get('pid'))-1;$i++){
         $control->set("pos/$i/value", (wfPhpfunc::substr($control->get('pid'), $i, 1)));
         $mult = 1;
         if(($i % 2)==0){
